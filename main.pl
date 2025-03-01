@@ -1,7 +1,6 @@
 use strict;
 use warnings;
-use yaml;
 
-package main;
-
-my $spec = yaml::decode(@ARGV[0])
+require "./yaml.pm";
+my $spec = decode("openapi.yaml");
+print (my @matches = ("      name: Jorge" =~ /\w+(?=:)/g));
