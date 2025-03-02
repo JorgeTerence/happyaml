@@ -10,9 +10,10 @@ use Math::Utils qw(:utility);
 # TODO: ignore comments
 
 sub read_lines {
+    my ($file_name) = @_;
 	my ($FH, @lines, @indents);
 
-	open FH, '<', pop;
+	open FH, '<', $file_name;
 
     while (<FH>) {
         push @lines, $_;
@@ -24,18 +25,19 @@ sub read_lines {
 
 ### -> %obj
 sub yamler {
-    # @doc: string[] -> document lines
+    # $doc: \string[] -> document lines
     # $indent_size: int -> indentation size for the whole document
     # $indent: int -> indentation for the current block
     # $i: int -> start position for the current block
-    my ($doc_ref, $indent_size, $indent, $i) = $_;
-    my %obj;
+    my ($doc, $indent_size, $indent, $i) = @_;
+    my %obj = ();
 
     # foreach entry on the same indent level until there's one with less indentation (new parent object)
-    foreach (@$doc_ref) {
-        # print $_;
-        # breaks if the indent size is less than the current block
-        if (scalar (my $count = () = $_ =~ /\s{$indent_size}/) < $indent) { last; }
+    foreach (@$doc) {
+        # read until new object is reached (i.e.: indentation < current)
+        if ((my $count = () = $_ =~ /\s\{$indent_size\}/) < $indent) {
+            last;
+        }
 
         my @matches = $_ =~ /\w+(?=:)/g;
         my $key = $matches[0];
@@ -44,20 +46,23 @@ sub yamler {
         my @inline_values = $_ =~ /(?!:\s?)\S+$/g;
         if (scalar @inline_values > 0) {
             # TODO: parse inline value types
-            # %obj{$key} = @inline_values;
+            say @inline_values;
+            # %obj{$key} = pop @inline_values;
         } else {
             my %val;
-            # %val = yamler($doc_ref, $indent_size, $indent + $indent_size, $i + 1);
+            # %val = yamler($doc, $indent_size, $indent + $indent_size, $i + 1);
             # %obj{$key} = %val;
         }
 
         $i++;
     }
+
+    return %obj;
 }
 
 sub decode {
     my (@doc, $indentation) = read_lines pop;
-	return yamler \@doc, $indentation, 0, 0;
+	return yamler(\@doc, $indentation, 0, 0);
 }
 
 1;
