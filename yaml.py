@@ -4,41 +4,44 @@ from math import gcd
 # Alternative idea: instead of passing the entire document, pass the next block -> no need for indent and block_start
 
 
-def yamler(doc: list[str], indent_size: int, indent: int, block_start: int) -> dict:
+def yamler(block: list[str], indent_size: int) -> dict:
     obj = {}
-    for line in doc[block_start:]:
-        if line.isspace():
-            continue
+    for i, line in enumerate(block):
+        try:
+            key = re.search(r"\w+(?=:)", line).string  # type: ignore
+        except AttributeError:
+            raise KeyError("Failed to parse key in line %d:\n%s", i, line)
 
-        print("debug loop")
-        if len(re.match(r"\s\{%s}" % indent_size, line) or ""):
-            break
-
-        key = ""
-        if (match := re.match(r"\w+(?=:)", line)) is not None:
-            key = match.string
+        # TODO: don't mess up strings
+        if (inline_values := re.search(r"(?!:\s?)\S+$", line)) is not None:
+            print("[inline] value =", inline_values.string)
+            obj[key] = inline_values
         else:
-            print("no key")
-            print(line)
-            return {}
-            # raise Exception("no key")
-
-        if (inline_values := re.match(r"(?!:\s?)\S+$", line)) is not None:
-            print("debug inline")
-            print(inline_values.string)
-        else:
-            print("debug nested")
-            obj[key] = yamler(doc, indent_size, indent + indent_size, block_start + 1)
-            inline_values = match.string
-
-        block_start += 1
+            print("[nested] key =", key)
+            print("line =", line)
+            obj[key] = yamler(sub_block(block, indent_size), indent_size)
 
     return obj
 
 
+def sub_block(block: list[str], indent_size: int) -> list[str]:
+    # start = next line
+    # end = earlies line where indentation < current_indentation + indent_size
+
+    print(block[1])
+    current_indent = re.match(r"^\s+", block[1]).string  # type: ignore
+
+    for i, line in enumerate(block[1:]):
+        if re.match(rf"$\s{{current_index}}", line) is None:
+            return block[1:i]
+
+    return block[1:2]
+
+
 def parse(file_name: str) -> dict:
     with open(file_name) as f:
-        document = f.readlines()
+        document = [l for l in f.readlines() if not (l.startswith("#") or l.isspace())]
+
         document_indentation = gcd(
             *[
                 len(
@@ -49,4 +52,4 @@ def parse(file_name: str) -> dict:
                 for line in document
             ]
         )
-        return yamler(document, document_indentation, 0, 0)
+        return yamler(document, document_indentation)
