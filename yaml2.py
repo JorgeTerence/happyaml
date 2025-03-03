@@ -15,6 +15,7 @@ def parse(file_name: str) -> dict:
 
         tree = build_tree(lines, document_indentation)
 
+        print("------")
         for branch in tree:
             print(branch)
 
@@ -26,16 +27,22 @@ def build_tree(lines: list[str], indent: int) -> list:
     # TODO: account for array items
     # TODO: don't allow for mixed key-value pairs and array elements
     # TODO: validate string quotes
-    print(lines, indent)
-    return [
-        (
-            line
-            if is_inline(line)
-            else {line: build_tree(lines[i : find_next_block_end(lines)], indent)}
-        )
-        for i, line in enumerate(lines)
-        if not is_nested(line, indent)
-    ]
+    base_indent = indentation(lines[0] if lines else "")
+    layer = []
+    for i, line in enumerate(lines):
+        if is_nested(line, base_indent):
+            continue
+
+        if is_inline(line):
+            print("[inline]", line)
+            layer.append(line)
+        else:
+            print("[nested]", line)
+            layer.append(
+                {line: build_tree(lines[i + 1 : find_next_block_end(lines)], indent)}
+            )
+
+    return layer
 
 
 def is_nested(line: str, indent: int) -> bool:
@@ -52,7 +59,7 @@ def find_next_block_end(lines: list[str]) -> int:
         if indentation(line) < base:
             return i
 
-    return 1
+    return len(lines)
 
 
 def indentation(line: str) -> int:
