@@ -9,3 +9,6 @@ indent_size = 4
 
 [*.md]
 indent_size = 2
+
+[.gitignore]
+end_of_line = crlf
