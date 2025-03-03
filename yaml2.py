@@ -3,7 +3,10 @@ import re
 from typing import Any
 
 
-def parse(file_name: str) -> dict:
+# TODO: list of dicts syntax
+
+
+def parse(file_name: str) -> dict | list:
     with open(file_name) as f:
         lines = [
             l.replace("\n", "")
@@ -63,7 +66,10 @@ def indentation(line: str) -> int:
     return len(re.search(r"^\s*", line).group())  # type: ignore
 
 
-def serialize(tree: list[str | dict]) -> dict[str, Any]:
+def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
+    if any(b.strip().startswith("-") for b in tree if type(b) == str):
+        return serialize_list(tree)
+
     obj = {}
 
     for branch in tree:
@@ -74,10 +80,19 @@ def serialize(tree: list[str | dict]) -> dict[str, Any]:
             obj[key] = value
         elif type(branch) == dict:
             k, v = list(branch.items())[0]
-            print('[dict]', k, v)
+            print("[dict]", k, v)
             obj[k] = serialize(v)
 
     return obj
 
 
-def serialize_list(tree: list[str | dict]) -> list[Any]: ...
+def serialize_list(tree: list[str | dict]) -> list[Any]:
+    arr = []
+    for branch in tree:
+        if type(branch) == str:
+            arr.append(branch.strip()[2:])
+        elif type(branch) == dict:
+            print("TODO: dict array ->", branch)
+            # arr.append(serialize(branch))
+
+    return arr
