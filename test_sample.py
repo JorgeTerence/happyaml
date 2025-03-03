@@ -2,7 +2,7 @@ import yaml2
 
 
 def test_parse_nested():
-    expected = {"root": "1", "branch": {"prop": "2", "arr": ["1", "10", "100"]}}
+    expected = {"root": 1, "branch": {"prop": 2, "arr": [1, 10, 100]}}
     assert yaml2.parse("samples/1-simple.yaml") == expected
 
 

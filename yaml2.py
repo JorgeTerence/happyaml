@@ -62,6 +62,25 @@ def indentation(line: str) -> int:
     return len(re.search(r"^\s*", line).group())  # type: ignore
 
 
+def get_inline_value(branch: str) -> str | int | float:
+    val = re.search(r'(?!:\s?)[(\s?\w+)|"|\']+$', branch).group().strip()  # type: ignore
+
+    # if it's a quoted string:
+    if re.search(r"^['\"]", val) is not None:
+        # escape quotes
+        return re.search(r"(?!\")(?:[^\"\\]|\\.)*(?=\"$)|(?!')(?:[^'\\]|\\.)*(?='$)", val).group()  # type: ignore
+    # try into int
+    elif val.isdecimal():
+        return int(val)
+    else:
+        # try into float
+        try:
+            return float(val)
+        # it's an unquoted string
+        except ValueError:
+            return val
+
+
 def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
     if any(b.strip().startswith("-") for b in tree if type(b) == str):
         return serialize_list(tree)
@@ -72,13 +91,8 @@ def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
         # inline value
         if type(branch) == str:
             key = re.search(r"(?!^\s)\w+(?=:)", branch).group()  # type: ignore
-            value = re.search(r'(?!:\s?)[(\s?\w+)|"|\']+$', branch).group().strip()  # type: ignore
+            obj[key] = get_inline_value(branch)
 
-            # if it's a quoted string:
-            if re.search(r"^['\"]", value) is not None:
-                # escape quotes
-                value = re.search(r"(?!\")(?:[^\"\\]|\\.)*(?=\"$)|(?!')(?:[^'\\]|\\.)*(?='$)", value).group()  # type: ignore
-            obj[key] = value
         # nested value
         elif type(branch) == dict:
             k, v = list(branch.items())[0]
@@ -91,7 +105,7 @@ def serialize_list(tree: list[str | dict]) -> list[Any]:
     arr = []
     for branch in tree:
         if type(branch) == str:
-            arr.append(branch.strip()[2:])
+            arr.append(get_inline_value(branch))
         elif type(branch) == dict:
             print("TODO: dict array ->", branch)
             # arr.append(serialize(branch))

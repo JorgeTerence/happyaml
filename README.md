@@ -4,10 +4,17 @@ An OpenAPI spec to HTML parser. Includes fully fledged YAML parser :)
 
 ---
 
-𝜏 = 2π
+$$
+\text{A} + \text{Pi} \to \text{Z} + \text{Tau}
+$$
+$$
+\text{tau}=\tau=2\pi
+$$
 
-## TODO:
+---
 
-- [ ] String quotes
-- [ ] Convert YAML value types
+## TODO
+
+- [x] String quotes
+- [x] Convert YAML value types
 - [ ] Dict Arrays
