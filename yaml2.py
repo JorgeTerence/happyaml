@@ -16,10 +16,9 @@ def parse(file_name: str) -> dict:
         tree = build_tree(lines, document_indentation)
 
         print("------")
-        for branch in tree:
-            print(branch)
+        print(tree)
 
-        return {}
+        return serialize(tree)
 
 
 def build_tree(lines: list[str], indent: int) -> list:
@@ -34,10 +33,8 @@ def build_tree(lines: list[str], indent: int) -> list:
             continue
 
         if is_inline(line):
-            print("[inline]", line)
             layer.append(line)
         else:
-            print("[nested]", line)
             layer.append(
                 {line: build_tree(lines[i + 1 : find_next_block_end(lines)], indent)}
             )
@@ -66,4 +63,21 @@ def indentation(line: str) -> int:
     return len(re.search(r"^\s*", line).group())  # type: ignore
 
 
-def serialize(tree: list[str | dict]) -> dict[str, Any]: ...
+def serialize(tree: list[str | dict]) -> dict[str, Any]:
+    obj = {}
+
+    for branch in tree:
+        # inline value
+        if type(branch) == str:
+            key = re.search(r"(?!^\s)\w+(?=:)", branch).group()  # type: ignore
+            value = re.search(r'(?!:\s?)[\w|"|\']+$', branch).group()  # type: ignore
+            obj[key] = value
+        elif type(branch) == dict:
+            k, v = list(branch.items())[0]
+            print('[dict]', k, v)
+            obj[k] = serialize(v)
+
+    return obj
+
+
+def serialize_list(tree: list[str | dict]) -> list[Any]: ...
