@@ -8,6 +8,6 @@ An OpenAPI spec to HTML parser. Includes fully fledged YAML parser :)
 
 ## TODO:
 
-[ ] Convert YAML value types
-[ ] Dict Arrays
-[ ] String quotes
+- [ ] String quotes
+- [ ] Convert YAML value types
+- [ ] Dict Arrays

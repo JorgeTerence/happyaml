@@ -1,0 +1,7 @@
+root: 1
+branch:
+  prop: 2
+  arr:
+    - 1
+    - 10
+    - 100

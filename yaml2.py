@@ -18,9 +18,6 @@ def parse(file_name: str) -> dict | list:
 
         tree = build_tree(lines, document_indentation)
 
-        print("------")
-        print(tree)
-
         return serialize(tree)
 
 
@@ -36,8 +33,10 @@ def build_tree(lines: list[str], indent: int) -> list:
             continue
 
         if is_inline(line):
+            print("[inline] =", line)
             layer.append(line)
         else:
+            print("[nested] =", line)
             layer.append(
                 {line: build_tree(lines[i + 1 : find_next_block_end(lines)], indent)}
             )
@@ -50,7 +49,7 @@ def is_nested(line: str, indent: int) -> bool:
 
 
 def is_inline(line) -> bool:
-    return re.search(r"(:\s?\S+$)|(^\s*-)", line) is not None
+    return re.search(r":\s?(\s\w+)+$|^\s*-", line) is not None
 
 
 def find_next_block_end(lines: list[str]) -> int:
@@ -75,13 +74,15 @@ def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
     for branch in tree:
         # inline value
         if type(branch) == str:
+            print("[inline] =", branch)
             key = re.search(r"(?!^\s)\w+(?=:)", branch).group()  # type: ignore
-            value = re.search(r'(?!:\s?)[\w|"|\']+$', branch).group()  # type: ignore
-            obj[key] = value
+            value = re.search(r'(?!:\s?)[(\s?\w+)|"|\']+$', branch).group()  # type: ignore
+            obj[key] = value.strip()
+        # nested value
         elif type(branch) == dict:
+            print("[nested] =", branch)
             k, v = list(branch.items())[0]
-            print("[dict]", k, v)
-            obj[k] = serialize(v)
+            obj[k.strip().replace(":", "")] = serialize(v)
 
     return obj
 
