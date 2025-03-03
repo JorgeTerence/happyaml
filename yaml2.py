@@ -15,13 +15,15 @@ def parse(file_name: str) -> dict:
 
 
 def build_tree(lines: list[str], indent: int) -> list:
-    # Assumes the root object is not a list
+    # Assumes the root object is not a list???
     layer = []
     for i, line in enumerate(lines):
         if is_nested(line):
             continue
 
         # TODO: account for array items
+        # TODO: don't allow for mixed key-value pairs and array elements
+        # TODO: validate string quotes
         if is_inline(line):
             layer.append(line)
         else:
@@ -32,9 +34,12 @@ def build_tree(lines: list[str], indent: int) -> list:
     return layer
 
 
-def is_nested(line) -> bool: ...
+def is_nested(line: str) -> bool: ...
 
-def is_inline(line) -> bool: ...
+
+def is_inline(line) -> bool:
+    return re.search(r"(:\s?\S+$)|(^\s*-)", line) is not None
+
 
 def find_next_block_end(lines: list[str]) -> int: ...
 
