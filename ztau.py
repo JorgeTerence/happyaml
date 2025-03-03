@@ -1,4 +1,4 @@
-import yaml;
+import yaml2;
 
-spec = yaml.parse("openapi.yaml")
+spec = yaml2.parse("openapi.yaml")
 print(spec)
