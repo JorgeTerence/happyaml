@@ -1,5 +1,5 @@
 simple: hello world
-# single: 'my mom'
-# double: "muscle man"
-# mixed: "how do you spell 'camel'?"
-# mixed2: 'how about "dromedaire"?'
+single: 'my mom'
+double: "muscle man"
+mixed: "how do you spell 'camel'?"
+mixed2: 'how about "dromedaire"?'

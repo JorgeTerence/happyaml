@@ -7,5 +7,11 @@ def test_parse_nested():
 
 
 def test_strings():
-    expected = {"simple": "hello world"}
+    expected = {
+        "simple": "hello world",
+        "single": "my mom",
+        "double": "muscle man",
+        "mixed": "how do you spell 'camel'?",
+        "mixed2": "how about \"dromedaire\"?",
+    }
     assert yaml2.parse("samples/2-strings.yaml") == expected

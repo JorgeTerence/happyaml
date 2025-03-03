@@ -3,9 +3,6 @@ import re
 from typing import Any
 
 
-# TODO: list of dicts syntax
-
-
 def parse(file_name: str) -> dict | list:
     with open(file_name) as f:
         lines = [
@@ -23,9 +20,7 @@ def parse(file_name: str) -> dict | list:
 
 def build_tree(lines: list[str], indent: int) -> list:
     # Assumes the root object is not a list???
-    # TODO: account for array items
     # TODO: don't allow for mixed key-value pairs and array elements
-    # TODO: validate string quotes
     base_indent = indentation(lines[0] if lines else "")
     layer = []
     for i, line in enumerate(lines):
@@ -33,12 +28,10 @@ def build_tree(lines: list[str], indent: int) -> list:
             continue
 
         if is_inline(line):
-            print("[inline] =", line)
             layer.append(line)
         else:
-            print("[nested] =", line)
             layer.append(
-                {line: build_tree(lines[i + 1 : find_next_block_end(lines)], indent)}
+                {line: build_tree(lines[i + 1 : sub_block_bound(lines)], indent)}
             )
 
     return layer
@@ -49,10 +42,14 @@ def is_nested(line: str, indent: int) -> bool:
 
 
 def is_inline(line) -> bool:
-    return re.search(r":\s?(\s\w+)+$|^\s*-", line) is not None
+    return (
+        re.search(r"(?!:\s?)(\"(?:[^\"\\]|\\.)*\"|'(?:[^'\\]|\\.)*')|(\w\s?)+$", line)
+        # (?!")(?:[^"\\]|\\.)*(?="$)|(?!')(?:[^'\\]|\\.)*(?='$)
+        is not None
+    )
 
 
-def find_next_block_end(lines: list[str]) -> int:
+def sub_block_bound(lines: list[str]) -> int:
     base = indentation(lines[0])
     for i, line in enumerate(lines[1:], 1):
         if indentation(line) < base:
@@ -74,13 +71,16 @@ def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
     for branch in tree:
         # inline value
         if type(branch) == str:
-            print("[inline] =", branch)
             key = re.search(r"(?!^\s)\w+(?=:)", branch).group()  # type: ignore
-            value = re.search(r'(?!:\s?)[(\s?\w+)|"|\']+$', branch).group()  # type: ignore
-            obj[key] = value.strip()
+            value = re.search(r'(?!:\s?)[(\s?\w+)|"|\']+$', branch).group().strip()  # type: ignore
+
+            # if it's a quoted string:
+            if re.search(r"^['\"]", value) is not None:
+                # escape quotes
+                value = re.search(r"(?!\")(?:[^\"\\]|\\.)*(?=\"$)|(?!')(?:[^'\\]|\\.)*(?='$)", value).group()  # type: ignore
+            obj[key] = value
         # nested value
         elif type(branch) == dict:
-            print("[nested] =", branch)
             k, v = list(branch.items())[0]
             obj[k.strip().replace(":", "")] = serialize(v)
 
