@@ -5,11 +5,7 @@ from typing import Any
 
 def parse(file_name: str) -> dict | list:
     with open(file_name) as f:
-        lines = [
-            l.replace("\n", "")
-            for l in f.readlines()
-            if not (l.startswith("#") or l.isspace())
-        ]
+        lines = [l.split("#")[0] for l in f.readlines() if not (l.startswith("#") or l.isspace())]
 
         document_indentation = gcd(*[indentation(l) for l in lines])
 

@@ -15,3 +15,10 @@ def test_strings():
         "mixed2": "how about \"dromedaire\"?",
     }
     assert yaml2.parse("samples/2-strings.yaml") == expected
+
+
+def test_comments():
+    expected = {
+        "key": "value"
+    }
+    assert yaml2.parse("samples/3-comments.yaml") == expected
