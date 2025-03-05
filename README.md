@@ -1,23 +1,27 @@
-# ZTau
+# HappYAML
 
-An OpenAPI spec to HTML parser. Includes fully fledged YAML parser :)
+[![license](https://img.shields.io/github/license/JorgeTerence/happyaml?color=f7f7f7)](LICENSE)
 
----
+[![made with care](https://img.shields.io/badge/a%20branch%20of%20-BuscaVest%20-9173e5)](https://github.com/BuscaVest)
 
-$$
-\text{A} + \text{Pi} \to \text{Z} + \text{Tau}
-$$
-$$
-\text{tau}=\tau=2\pi
-$$
+It is pronounced like ハッヒºャマル
 
----
+A pure Python implementation for YAML, converting to `dict` objects.
 
-## TODO
+## About
 
-- [x] String quotes
-- [x] Convert YAML value types
-- [x] Mid-line comments
-- [x] Mid-string hashtags
-- [x] Arbitrary string keys
-- [ ] Dict Arrays
+This was originally part of the [ztau](https://github.com/JorgeTerence/ztau) repo, but I soon realized this should get an approriate place of it's own.
+
+Though the package is still not published, you can use it by copying the `happyaml.py` file into your project and importing it. Yes, it only relies on the standard library.
+
+```py
+import happyaml
+
+config = happyaml.parse("~/.config/myapp/myapp.yaml")
+print(config["token"])
+```
+
+## Roadmap
+
+- [ ] Dict arrays
+- [ ] Inline arrays
