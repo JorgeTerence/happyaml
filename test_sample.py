@@ -46,6 +46,7 @@ def test_keys():
         "snake-case": "bleh",
         "quoted": True,
         "single_quoted": "perhaps",
+        ":/": "this sucks",
     }
     assert yaml.parse("samples/5-keys.yaml") == expected
 

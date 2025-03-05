@@ -6,7 +6,11 @@ from typing import Any
 def parse(file_name: str) -> dict | list:
     with open(file_name) as f:
         # remove blank and comment-only lines
-        lines = [re.split(r"\s#[^\"|'|\n]+$", l)[0] for l in f.readlines() if re.search(r"^\s*#|^\s*$", l) is None]
+        lines = [
+            re.split(r"\s#[^\"|'|\n]+$", l)[0]
+            for l in f.readlines()
+            if re.search(r"^\s*#|^\s*$", l) is None
+        ]
 
         document_indentation = gcd(*[indentation(l) for l in lines])
 
@@ -49,21 +53,24 @@ def indentation(line: str) -> int:
     return len(re.search(r"^\s*", line).group())  # type: ignore
 
 
+def escape_quotes(meta_str: str) -> str:
+    return re.search(r"(?!\")(?:[^\"\\]|\\.)*(?=\"$)|(?!')(?:[^'\\]|\\.)*(?='$)", meta_str).group()  # type: ignore
+
+
 def get_inline_value(branch: str) -> str | int | float | bool | None:
-    val = re.split(r'\w+:\s*|^\s*-\s*', branch)[-1].strip()  # type: ignore
-    print(branch.strip(), "->", val)
+    val = re.split(r"(['\"]?)\w+\1:\s*|^\s*-\s*", branch)[-1].strip()  # type: ignore
 
     # try into bool
     if val.lower() in ["true", "y", "yes"]:
         return True
     if val.lower() in ["false", "n", "no"]:
         return False
+    # try into null
     if val.lower() in ["null", "~"]:
         return None
-    # if it's a quoted string:
+    # try into quoted string
     if re.search(r"^['\"]", val) is not None:
-        # escape quotes
-        return re.search(r"(?!\")(?:[^\"\\]|\\.)*(?=\"$)|(?!')(?:[^'\\]|\\.)*(?='$)", val).group()  # type: ignore
+        return escape_quotes(val)
     # try into int
     elif val.isdecimal():
         return int(val)
@@ -85,7 +92,10 @@ def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
     for branch in tree:
         # inline value
         if type(branch) == str:
-            key = re.search(r"(?!^\s)\w+(?=:)", branch).group()  # type: ignore
+            key = re.search(r"(?!\s).+(?=:\s['\" ]?)", branch).group()  # type: ignore
+            if re.search(r"^['\"]", key) is not None:
+                key = escape_quotes(key)
+
             obj[key] = get_inline_value(branch)
 
         # nested value
