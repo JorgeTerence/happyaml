@@ -5,3 +5,9 @@ branch:
     - 1
     - 10
     - 100
+  nested:
+    - 2
+    - 20
+    - 200
+
+last: here

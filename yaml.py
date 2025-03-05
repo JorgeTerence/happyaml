@@ -26,7 +26,7 @@ def build_tree(lines: list[str], indent: int) -> list:
         (
             line
             if is_inline(line)
-            else {line: build_tree(lines[i : child_bounds(lines)], indent)}
+            else {line: build_tree(lines[i : child_bounds(lines, i)], indent)}
         )
         for i, line in enumerate(lines, 1)
         if indentation(line) == block_indent  # skips nested blocks
@@ -40,11 +40,14 @@ def is_inline(line) -> bool:
     )
 
 
-def child_bounds(lines: list[str]) -> int:
-    base = indentation(lines[0])
-    for i, line in enumerate(lines[1:], 1):
-        if indentation(line) < base:
-            return i
+def child_bounds(lines: list[str], root_index: int) -> int:
+    indent = indentation(lines[0])
+    if indent == 0:
+        return len(lines)
+
+    for i, line in enumerate(lines[2:], 1):
+        if indentation(line) == indent:
+            return i + root_index
 
     return len(lines)
 
@@ -84,14 +87,18 @@ def get_inline_value(branch: str) -> str | int | float | bool | None:
 
 
 def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
-    if any(re.search(r"^\s*-", b) is not None for b in tree if type(b) == str):
+    if any(re.search(r"^\s*-", b) is not None for b in tree if type(b) is str):
         return serialize_list(tree)
 
+    return serialize_obj(tree)
+
+
+def serialize_obj(tree: list[str | dict]) -> dict[str, Any] | list:
     obj = {}
 
     for branch in tree:
         # inline value
-        if type(branch) == str:
+        if type(branch) is str:
             key = re.search(r"(?!\s).+(?=:\s['\" ]?)", branch).group()  # type: ignore
             if re.search(r"^['\"]", key) is not None:
                 key = escape_quotes(key)
@@ -99,7 +106,7 @@ def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
             obj[key] = get_inline_value(branch)
 
         # nested value
-        elif type(branch) == dict:
+        elif type(branch) is dict:
             k, v = list(branch.items())[0]
             obj[k.strip().replace(":", "")] = serialize(v)
 
@@ -107,11 +114,10 @@ def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
 
 
 def serialize_list(tree: list[str | dict]) -> list[Any]:
-    return [
-        (
-            get_inline_value(branch)
-            if type(branch) == str
-            else print("list[dict] ->", branch)
-        )
-        for branch in tree
-    ]
+    arr = []
+    for branch in tree:
+        if type(branch) is str:
+            arr.append(get_inline_value(branch))
+        else:
+            print("list[dict] ->", branch)
+    return arr

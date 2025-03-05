@@ -18,6 +18,6 @@ $$
 - [x] String quotes
 - [x] Convert YAML value types
 - [x] Mid-line comments
-- [ ] Mid-string hashtags
-- [ ] Arbitrary string keys
+- [x] Mid-string hashtags
+- [x] Arbitrary string keys
 - [ ] Dict Arrays
