@@ -1,15 +1,13 @@
 from math import gcd
 import re
+import readline
 from typing import Any
 
 
 def parse(file_name: str) -> dict | list:
     with open(file_name) as f:
-        lines = [
-            l.split("#")[0]
-            for l in f.readlines()
-            if not (l.startswith("#") or l.isspace())
-        ]
+        # remove blank and comment-only lines
+        lines = [l for l in f.readlines() if re.search(r"^\s*#|^\s*$", l) is None]
 
         document_indentation = gcd(*[indentation(l) for l in lines])
 
@@ -56,11 +54,12 @@ def indentation(line: str) -> int:
 
 def get_inline_value(branch: str) -> str | int | float | bool:
     val = re.search(r'(?!:\s?)[(\s?\w+)|"|\']+$', branch).group().strip()  # type: ignore
+    print(branch, "->", val)
 
     # try into bool
-    if val == "true":
+    if val.lower() in ["true", "y", "yes"]:
         return True
-    if val == "false":
+    if val.lower() in ["false", "n", "no"]:
         return False
     # if it's a quoted string:
     if re.search(r"^['\"]", val) is not None:
@@ -103,7 +102,7 @@ def serialize_list(tree: list[str | dict]) -> list[Any]:
         (
             get_inline_value(branch)
             if type(branch) == str
-            else print("list[dict] ->", branch) # TODO: dict arrays
+            else print("list[dict] ->", branch)  # TODO: dict arrays
         )
         for branch in tree
     ]

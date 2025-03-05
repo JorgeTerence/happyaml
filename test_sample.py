@@ -20,6 +20,7 @@ def test_strings():
 def test_comments():
     expected = {
         "key": "value",
+        "chave": "value# this is not a comment",
         "tricky": "why does tick-tack-toes have a # grid and not a ##?",
     }
     assert yaml.parse("samples/3-comments.yaml") == expected
@@ -35,3 +36,14 @@ def test_types():
         "strong": ":3",
     }
     assert yaml.parse("samples/4-types.yaml") == expected
+
+
+def test_keys():
+    expected = {
+        "bad design": True,
+        "1": "oh no",
+        "snake-case": "bleh",
+        "quoted": True,
+        "single_quoted": "perhaps",
+    }
+    assert yaml.parse("samples/5-keys.yaml") == expected
