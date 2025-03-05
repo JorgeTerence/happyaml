@@ -6,7 +6,7 @@ from typing import Any
 def parse(file_name: str) -> dict | list:
     with open(file_name) as f:
         # remove blank and comment-only lines
-        lines = [l for l in f.readlines() if re.search(r"^\s*#|^\s*$", l) is None]
+        lines = [re.split(r"\s#[^\"|'|\n]+$", l)[0] for l in f.readlines() if re.search(r"^\s*#|^\s*$", l) is None]
 
         document_indentation = gcd(*[indentation(l) for l in lines])
 
@@ -50,7 +50,7 @@ def indentation(line: str) -> int:
 
 
 def get_inline_value(branch: str) -> str | int | float | bool | None:
-    val = re.split(r'\w+:\s*|-\s*', branch)[-1].strip()  # type: ignore
+    val = re.split(r'\w+:\s*|^\s*-\s*', branch)[-1].strip()  # type: ignore
     print(branch.strip(), "->", val)
 
     # try into bool
