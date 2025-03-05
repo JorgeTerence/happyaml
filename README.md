@@ -18,4 +18,5 @@ $$
 - [x] String quotes
 - [x] Convert YAML value types
 - [x] Mid-line comments
+- [ ] Mid-string hashtags
 - [ ] Dict Arrays

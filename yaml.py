@@ -54,9 +54,14 @@ def indentation(line: str) -> int:
     return len(re.search(r"^\s*", line).group())  # type: ignore
 
 
-def get_inline_value(branch: str) -> str | int | float:
+def get_inline_value(branch: str) -> str | int | float | bool:
     val = re.search(r'(?!:\s?)[(\s?\w+)|"|\']+$', branch).group().strip()  # type: ignore
 
+    # try into bool
+    if val == "true":
+        return True
+    if val == "false":
+        return False
     # if it's a quoted string:
     if re.search(r"^['\"]", val) is not None:
         # escape quotes

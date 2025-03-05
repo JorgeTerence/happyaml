@@ -18,5 +18,20 @@ def test_strings():
 
 
 def test_comments():
-    expected = {"key": "value"}
+    expected = {
+        "key": "value",
+        "tricky": "why does tick-tack-toes have a # grid and not a ##?",
+    }
     assert yaml.parse("samples/3-comments.yaml") == expected
+
+
+def test_types():
+    expected = {
+        "boolean": True,
+        "unboolean": False,
+        "float": 3.14159,
+        "int": 1,
+        "string": "one must imagine sysiphus happy",
+        "strong": ":3",
+    }
+    assert yaml.parse("samples/4-types.yaml") == expected
