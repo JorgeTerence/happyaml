@@ -23,29 +23,15 @@ def build_tree(lines: list[str], indent: int) -> list:
     # TODO: don't allow for mixed key-value pairs and array elements
     block_indent = indentation(lines[0] if lines else "")
 
-    # return [
-    #     line if is_inline(line)
-    #     else {line: build_tree(lines[i + 1 : sub_block_bound(lines)], indent)}
-    #     for i, line in enumerate(lines)    
-        
-    #     # skips nested blocks
-    #     if indentation(line) > block_indent
-    # ]
-
-    layer = []
-    for i, line in enumerate(lines):
-        # skips nested blocks
-        if indentation(line) > block_indent:
-            continue
-
-        if is_inline(line):
-            layer.append(line)
-        else:
-            layer.append(
-                {line: build_tree(lines[i + 1 : sub_block_bound(lines)], indent)}
-            )
-
-    return layer
+    return [
+        (
+            line
+            if is_inline(line)
+            else {line: build_tree(lines[i : child_bounds(lines)], indent)}
+        )
+        for i, line in enumerate(lines, 1)
+        if indentation(line) == block_indent  # skips nested blocks
+    ]
 
 
 def is_inline(line) -> bool:
@@ -55,7 +41,7 @@ def is_inline(line) -> bool:
     )
 
 
-def sub_block_bound(lines: list[str]) -> int:
+def child_bounds(lines: list[str]) -> int:
     base = indentation(lines[0])
     for i, line in enumerate(lines[1:], 1):
         if indentation(line) < base:
@@ -108,11 +94,11 @@ def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
 
 
 def serialize_list(tree: list[str | dict]) -> list[Any]:
-    arr = []
-    for branch in tree:
-        if type(branch) == str:
-            arr.append(get_inline_value(branch))
-        elif type(branch) == dict:
-            print("TODO: dict array ->", branch)
-
-    return arr
+    return [
+        (
+            get_inline_value(branch)
+            if type(branch) == str
+            else print("list[dict] ->", branch) # TODO: dict arrays
+        )
+        for branch in tree
+    ]
