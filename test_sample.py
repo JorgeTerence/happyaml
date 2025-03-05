@@ -34,6 +34,7 @@ def test_types():
         "int": 1,
         "string": "one must imagine sysiphus happy",
         "strong": ":3",
+        "nope": None,
     }
     assert yaml.parse("samples/4-types.yaml") == expected
 

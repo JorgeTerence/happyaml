@@ -1,6 +1,5 @@
 from math import gcd
 import re
-import readline
 from typing import Any
 
 
@@ -17,8 +16,6 @@ def parse(file_name: str) -> dict | list:
 
 
 def build_tree(lines: list[str], indent: int) -> list:
-    # TODO: allow for list root
-    # TODO: don't allow for mixed key-value pairs and array elements
     block_indent = indentation(lines[0] if lines else "")
 
     return [
@@ -52,15 +49,17 @@ def indentation(line: str) -> int:
     return len(re.search(r"^\s*", line).group())  # type: ignore
 
 
-def get_inline_value(branch: str) -> str | int | float | bool:
-    val = re.search(r'(?!:\s?)[(\s?\w+)|"|\']+$', branch).group().strip()  # type: ignore
-    print(branch, "->", val)
+def get_inline_value(branch: str) -> str | int | float | bool | None:
+    val = re.split(r'\w+:\s*|-\s*', branch)[-1].strip()  # type: ignore
+    print(branch.strip(), "->", val)
 
     # try into bool
     if val.lower() in ["true", "y", "yes"]:
         return True
     if val.lower() in ["false", "n", "no"]:
         return False
+    if val.lower() in ["null", "~"]:
+        return None
     # if it's a quoted string:
     if re.search(r"^['\"]", val) is not None:
         # escape quotes
@@ -102,7 +101,7 @@ def serialize_list(tree: list[str | dict]) -> list[Any]:
         (
             get_inline_value(branch)
             if type(branch) == str
-            else print("list[dict] ->", branch)  # TODO: dict arrays
+            else print("list[dict] ->", branch)
         )
         for branch in tree
     ]
