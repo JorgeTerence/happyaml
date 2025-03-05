@@ -58,7 +58,7 @@ def escape_quotes(meta_str: str) -> str:
 
 
 def get_inline_value(branch: str) -> str | int | float | bool | None:
-    val = re.split(r"(['\"]?)\w+\1:\s*|^\s*-\s*", branch)[-1].strip()  # type: ignore
+    val = re.split(r"^\s*.+(?=['\" ]?:\s):|^\s*-\s*", branch)[-1].strip()  # type: ignore
 
     # try into bool
     if val.lower() in ["true", "y", "yes"]:
