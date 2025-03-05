@@ -47,3 +47,21 @@ def test_keys():
         "single_quoted": "perhaps",
     }
     assert yaml.parse("samples/5-keys.yaml") == expected
+
+
+def test_root_list():
+    expected = ["VSCode", "IntelliJ", "Micro"]
+    assert yaml.parse("samples/6-root-list.yaml") == expected
+
+
+def test_dict_list():
+    expected = {
+        "font_size": 11,
+        "indent_size": 4,
+        "plugins": [
+            {"id": "python", "version": 3.12},
+            {"id": "ts", "version": 5.8},
+            {"id": "rust", "version": 1.84},
+        ],
+    }
+    assert yaml.parse("samples/7-list-of-dict.yaml") == expected

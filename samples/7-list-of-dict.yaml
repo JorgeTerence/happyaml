@@ -1,0 +1,9 @@
+font_size: 11
+indent_size: 4
+plugins:
+  - id: python
+    version: 3.12
+  - id: ts
+    version: 5.8
+  - id: rust
+    version: 1.84
