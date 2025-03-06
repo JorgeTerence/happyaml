@@ -75,3 +75,26 @@ def test_deep_nesting():
     ]
 
     assert backend.build_tree(doc) == expected
+
+
+def test_list():
+    doc = [
+        "- 1"
+        "- 2"
+        "- 3"
+    ]
+    assert backend.build_tree(doc) == doc
+
+
+def test_list_of_obj():
+    doc = [
+        "level1:",
+        "  - name: abc",
+        "    code: 123",
+    ]
+
+    expected = [
+        (doc[0], [doc[1], doc[2]])
+    ]
+
+    assert backend.build_tree(doc) == expected

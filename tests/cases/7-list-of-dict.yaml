@@ -7,3 +7,16 @@ plugins:
     version: 5.8
   - id: rust
     version: 1.84
+
+# l1:
+#   - name: a
+#     org:
+#       name: A
+#       region: A*
+#     id: 1
+
+# l2:
+#   - a
+#   - b
+#   - c
+#   - e

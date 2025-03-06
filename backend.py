@@ -41,19 +41,25 @@ def build_tree(lines: list[str]) -> list[str | tuple[str, list]]:
         return []
 
     branch_indentation = _get_indentation(lines[0])
+    list_mode = re.search(r"^\s*-", lines[0]) is not None
 
-    return [
-        (
-            line
-            if _is_inline(line)
-            # constructs subtree with all nested branches
-            else (
-                line,
-                build_tree(
-                    lines[i + 1 : _get_branch_limit(lines, i, branch_indentation)]
-                ),
-            )
-        )
-        for i, line in enumerate(lines)
-        if _get_indentation(line) == branch_indentation
-    ]
+    # if not list_mode, filter for exact indentation
+    # else filter for exact on first and exact or +2 on others
+
+    print(lines)
+    print([line for line in lines if _get_indentation(line) == branch_indentation])
+    print(list_mode)
+
+    tree = []
+
+    for i, line in enumerate(lines):
+        line_indentation = _get_indentation(line)
+        if line_indentation != branch_indentation:
+            continue
+    
+        if _is_inline(line):
+            tree.append(line)
+        else:
+            tree.append((line, build_tree(lines[i+1: _get_branch_limit(lines, i, branch_indentation)])))
+
+    return tree
