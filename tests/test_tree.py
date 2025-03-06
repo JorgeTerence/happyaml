@@ -1,6 +1,10 @@
 import happyaml2
 
 
+def test_empty():
+    assert happyaml2._build_tree([]) == []
+
+
 def test_basic():
     doc = ["key: value"]
     assert happyaml2._build_tree(doc) == doc

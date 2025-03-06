@@ -5,16 +5,12 @@ YamlValue = str | int | float | bool | None
 
 
 def parse(file_name: str) -> list | dict:
-    """
-    Reads a YAML file at the specified path and converts it into a Python value, be it a `dict` or a `list`.
-    """
+    """Reads a YAML file at the specified path and converts it into a Python value, be it a `dict` or a `list`."""
     ...
 
 
 def parse_yaml(file_content: str) -> list | dict:
-    """
-    Converts the provided YAML content to a Python value.
-    """
+    """Converts the provided YAML content to a Python value."""
     ...
 
 
@@ -61,18 +57,15 @@ def _get_indentation(line: str) -> int:
 
 
 def _is_inline(line: str) -> bool:
+    """Checks for any value after the double-colon `':'` separator. Accounts for arbitrary string keys"""
     return (
-        # checks if there's anything after the ':' key-value separator
-        # accounts for arbitrary string keys
         re.search(r"(?!:\s?)(\"(?:[^\"\\]|\\.)*\"|'(?:[^'\\]|\\.)*')|(\w\s?)+$", line)
         is not None
     )
 
 
 def _get_branch_limit(lines: list[str], root_index: int, indentation: int) -> int:
-    # if indentation == 0:
-    #     return len(lines)
-
+    """Read it as *"within `lines`, the branch starting at line `root_index` ends at `indentaion - 1`"*"""
     for i, line in enumerate(lines[root_index + 1 :], root_index + 1):
         if _get_indentation(line) <= indentation:
             return i
