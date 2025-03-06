@@ -47,30 +47,50 @@ def _get_inline_value(leaf: str) -> YamlValue:
     ...
 
 
-def _get_inline_key(leaf: str) -> str: ...
+def _get_inline_key(leaf: str) -> str:
+    match = re.search(r"(?!\s).+(?=:\s['\" ]?)", leaf)
+    if match is None:
+        raise KeyError("Failed to parse key for leaf: %s" % leaf)
+
+    return _escape_quotes(match.group())
 
 
-def _serialize(branch: list[str | dict]) -> list[YamlValue] | dict[str, YamlValue]: ...
+# Untested
+def _serialize(
+    branch: list[str | tuple[str, list]],
+) -> list[YamlValue] | dict[str, YamlValue]:
+    if any(re.search(r"^\s*-", leaf) is not None for leaf in branch if type(leaf) is str):
+        return _serialize_list(branch)
+
+    return _serialize_object(branch)
 
 
-def _serialize_list(branch: list[str | dict]) -> list[YamlValue]: ...
+# Untested
+def _serialize_list(branch: list[str | tuple[str, list]]) -> list[YamlValue]:
+    arr = []
+    for sub_branch in branch:
+        if type(sub_branch) is str:
+            arr.append(_get_inline_value(sub_branch))
+        elif type(sub_branch) is tuple:
+            print("[obj list] ->", sub_branch)
 
-# idea: convert dicts to plain tuples for nested data
+    return arr
 
 
-def _serialize_object(branch: list[str | dict[str, list]]) -> dict[str, YamlValue]:
+# Untested
+def _serialize_object(branch: list[str | tuple[str, list]]) -> dict[str, YamlValue]:
     object = {}
 
     for sub_branch in branch:
         if type(sub_branch) is str:
             object[_get_inline_key(sub_branch)] = _get_inline_value(sub_branch)
-        elif type(sub_branch) is dict:
-            key, values = tuple(sub_branch.items())[0]
-            object[key.strip().removesuffix(":")] = serialize(values)
-    
+        elif type(sub_branch) is tuple:
+            object[sub_branch[0].strip().removesuffix(":")] = serialize(sub_branch[1])
+
     return object
 
 
+# Untested
 def parse(file_name: str) -> list | dict:
     """Reads a YAML file at the specified path and converts it into a Python value, be it a `dict` or a `list`."""
     with open(file_name) as f:
@@ -85,6 +105,7 @@ def parse(file_name: str) -> list | dict:
         return _serialize(tree)
 
 
+# Untested
 def parse_yaml(file_content: str) -> list | dict:
     """Converts the provided YAML content to a Python value."""
     lines = [

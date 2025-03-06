@@ -19,14 +19,14 @@ def parse(file_name: str) -> dict | list:
         return serialize(tree)
 
 
-def serialize(tree: list[str | dict]) -> dict[str, Any] | list:
+def serialize(tree: list[str | tuple]) -> dict[str, Any] | list:
     if any(re.search(r"^\s*-", b) is not None for b in tree if type(b) is str):
         return serialize_list(tree)
 
     return serialize_obj(tree)
 
 
-def serialize_obj(tree: list[str | dict]) -> dict[str, Any]:
+def serialize_obj(tree: list[str | tuple]) -> dict[str, Any]:
     obj = {}
 
     for branch in tree:
@@ -39,14 +39,14 @@ def serialize_obj(tree: list[str | dict]) -> dict[str, Any]:
             obj[key] = _get_inline_value(branch)
 
         # nested value
-        elif type(branch) is dict:
-            k, v = list(branch.items())[0]
+        elif type(branch) is tuple:
+            k, v = branch
             obj[k.strip().replace(":", "")] = serialize(v)
 
     return obj
 
 
-def serialize_list(tree: list[str | dict]) -> list[Any]:
+def serialize_list(tree: list[str | tuple]) -> list[Any]:
     arr = []
     for branch in tree:
         if type(branch) is str:

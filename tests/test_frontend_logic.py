@@ -64,3 +64,15 @@ def test_list_value():
 
 def test_list_custom_type_value():
     assert type(happyaml2._get_inline_value("- 1.41213")) is float
+
+
+def test_simple_key():
+    assert happyaml2._get_inline_key("key: value") == "key"
+
+
+def test_quoted_key():
+    assert happyaml2._get_inline_key("'language': '日本語'") == "language"
+
+
+def test_complex_key():
+    assert happyaml2._get_inline_key("':3 is my favorite emoji': true") == ":3 is my favorite emoji"

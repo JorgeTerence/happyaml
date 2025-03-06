@@ -28,7 +28,7 @@ def _get_branch_limit(lines: list[str], root_index: int, indentation: int) -> in
     return len(lines)
 
 
-def build_tree(lines: list[str]) -> list:
+def build_tree(lines: list[str]) -> list[str | tuple[str, list]]:
     """
     Creates an intermediary representation of the data. Assignmnents are classified as nested or inline.
     All lines of the original document remain in the tree, though get organized in a recursive structure.
