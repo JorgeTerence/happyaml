@@ -11,7 +11,7 @@ def test_parse_nested():
         },
         "last": "here"
     }
-    assert happyaml.parse("samples/1-simple.yaml") == expected
+    assert happyaml.parse("tests/cases/1-simple.yaml") == expected
 
 
 def test_strings():
@@ -22,7 +22,7 @@ def test_strings():
         "mixed": "how do you spell 'camel'?",
         "mixed2": 'how about "dromedaire"?',
     }
-    assert happyaml.parse("samples/2-strings.yaml") == expected
+    assert happyaml.parse("tests/cases/2-strings.yaml") == expected
 
 
 def test_comments():
@@ -31,7 +31,7 @@ def test_comments():
         "chave": "value# this is not a comment",
         "tricky": "why does tick-tack-toes have a # grid and not a ##?",
     }
-    assert happyaml.parse("samples/3-comments.yaml") == expected
+    assert happyaml.parse("tests/cases/3-comments.yaml") == expected
 
 
 def test_types():
@@ -44,7 +44,7 @@ def test_types():
         "strong": ":3",
         "nope": None,
     }
-    assert happyaml.parse("samples/4-types.yaml") == expected
+    assert happyaml.parse("tests/cases/4-types.yaml") == expected
 
 
 def test_keys():
@@ -56,12 +56,12 @@ def test_keys():
         "single_quoted": "perhaps",
         ":/": "this sucks",
     }
-    assert happyaml.parse("samples/5-keys.yaml") == expected
+    assert happyaml.parse("tests/cases/5-keys.yaml") == expected
 
 
 def test_root_list():
     expected = ["VSCode", "IntelliJ", "Micro"]
-    assert happyaml.parse("samples/6-root-list.yaml") == expected
+    assert happyaml.parse("tests/cases/6-root-list.yaml") == expected
 
 
 def test_dict_list():
@@ -74,4 +74,4 @@ def test_dict_list():
             {"id": "rust", "version": 1.84},
         ],
     }
-    assert happyaml.parse("samples/7-list-of-dict.yaml") == expected
+    assert happyaml.parse("tests/cases/7-list-of-dict.yaml") == expected

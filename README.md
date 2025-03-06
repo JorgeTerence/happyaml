@@ -1,10 +1,13 @@
 # HappYAML
 
+<div style="display: flex">
+
 [![license](https://img.shields.io/github/license/JorgeTerence/happyaml?color=f7f7f7)](LICENSE)
+[![made with care](https://img.shields.io/badge/made%20with%20care%20by%20-BuscaVest%20-9173e5)](https://github.com/BuscaVest)
 
-[![made with care](https://img.shields.io/badge/a%20branch%20of%20-BuscaVest%20-9173e5)](https://github.com/BuscaVest)
+</div>
 
-It is pronounced like ハッヒºャマル
+It is pronounced like ハッヒ º ャマル
 
 A pure Python implementation for YAML, converting to `dict` objects.
 
@@ -25,3 +28,4 @@ print(config["token"])
 
 - [ ] Dict arrays
 - [ ] Inline arrays
+- [ ] Exponents

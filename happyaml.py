@@ -12,21 +12,19 @@ def parse(file_name: str) -> dict | list:
             if re.search(r"^\s*#|^\s*$", l) is None
         ]
 
-        document_indentation = gcd(*[indentation(l) for l in lines])
-
-        tree = build_tree(lines, document_indentation)
+        tree = build_tree(lines)
 
         return serialize(tree)
 
 
-def build_tree(lines: list[str], indent: int) -> list:
+def build_tree(lines: list[str]) -> list:
     block_indent = indentation(lines[0] if lines else "")
 
     return [
         (
             line
             if is_inline(line)
-            else {line: build_tree(lines[i : child_bounds(lines, i)], indent)}
+            else {line: build_tree(lines[i : child_bounds(lines, i)])}
         )
         for i, line in enumerate(lines, 1)
         if indentation(line) == block_indent  # skips nested blocks
