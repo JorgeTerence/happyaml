@@ -18,6 +18,10 @@ def test_escape_dumb():
     assert happyaml2._escape_quotes("already ecaped") == "already ecaped"
 
 
+def test_escape_apostrophe():
+    assert happyaml2._escape_quotes("I'm here and you're there") == "I'm here and you're there"
+
+
 def test_boolean_yes_value():
     assert type(happyaml2._get_inline_value("bool: yes")) is bool
 
@@ -52,3 +56,11 @@ def test_string_value():
 
 def test_complex_key_value():
     assert type(happyaml2._get_inline_value("':3 is my favorite emoji': true")) is bool
+
+
+def test_list_value():
+    assert type(happyaml2._get_inline_value("- list item")) is str
+
+
+def test_list_custom_type_value():
+    assert type(happyaml2._get_inline_value("- 1.41213")) is float
