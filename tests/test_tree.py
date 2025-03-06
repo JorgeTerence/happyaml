@@ -1,13 +1,13 @@
-import happyaml2
+import backend
 
 
 def test_empty():
-    assert happyaml2._build_tree([]) == []
+    assert backend.build_tree([]) == []
 
 
 def test_basic():
     doc = ["key: value"]
-    assert happyaml2._build_tree(doc) == doc
+    assert backend.build_tree(doc) == doc
 
 
 def test_nested():
@@ -15,7 +15,7 @@ def test_nested():
         "branch:",
         "  leaf: 1",
     ]
-    assert happyaml2._build_tree(doc) == [{doc[0]: [doc[1]]}]
+    assert backend.build_tree(doc) == [{doc[0]: [doc[1]]}]
 
 
 def test_multiple_leaves():
@@ -24,7 +24,7 @@ def test_multiple_leaves():
         "  leaf: 1",
         "  apple: 2",
     ]
-    assert happyaml2._build_tree(doc) == [{doc[0]: [doc[1], doc[2]]}]
+    assert backend.build_tree(doc) == [{doc[0]: [doc[1], doc[2]]}]
 
 
 def test_multiple_branches():
@@ -39,7 +39,7 @@ def test_multiple_branches():
         {doc[0]: [doc[1], doc[2]]},
         {doc[3]: [doc[4]]},
     ]
-    assert happyaml2._build_tree(doc) == expected
+    assert backend.build_tree(doc) == expected
 
 
 def test_deep_nesting():
@@ -71,4 +71,4 @@ def test_deep_nesting():
         }
     ]
 
-    assert happyaml2._build_tree(doc) == expected
+    assert backend.build_tree(doc) == expected
