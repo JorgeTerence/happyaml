@@ -79,9 +79,9 @@ def test_deep_nesting():
 
 def test_list():
     doc = [
-        "- 1"
-        "- 2"
-        "- 3"
+        "- 1",
+        "- 2",
+        "- 3",
     ]
     assert backend.build_tree(doc) == doc
 

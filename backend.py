@@ -47,19 +47,28 @@ def build_tree(lines: list[str]) -> list[str | tuple[str, list]]:
     # else filter for exact on first and exact or +2 on others
 
     print(lines)
-    print([line for line in lines if _get_indentation(line) == branch_indentation])
     print(list_mode)
 
     tree = []
 
     for i, line in enumerate(lines):
         line_indentation = _get_indentation(line)
-        if line_indentation != branch_indentation:
+        ok_obj_list = list_mode and line_indentation == branch_indentation + 2
+        ok_normal = line_indentation == branch_indentation
+
+        if not (ok_normal or ok_obj_list):
             continue
-    
+
         if _is_inline(line):
             tree.append(line)
         else:
-            tree.append((line, build_tree(lines[i+1: _get_branch_limit(lines, i, branch_indentation)])))
+            tree.append(
+                (
+                    line,
+                    build_tree(
+                        lines[i + 1 : _get_branch_limit(lines, i, branch_indentation)]
+                    ),
+                )
+            )
 
     return tree
