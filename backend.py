@@ -47,11 +47,12 @@ def build_tree(lines: list[str]) -> list:
             line
             if _is_inline(line)
             # constructs subtree with all nested branches
-            else {
-                line: build_tree(
+            else (
+                line,
+                build_tree(
                     lines[i + 1 : _get_branch_limit(lines, i, branch_indentation)]
-                )
-            }
+                ),
+            )
         )
         for i, line in enumerate(lines)
         if _get_indentation(line) == branch_indentation

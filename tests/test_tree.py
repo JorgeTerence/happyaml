@@ -15,7 +15,7 @@ def test_nested():
         "branch:",
         "  leaf: 1",
     ]
-    assert backend.build_tree(doc) == [{doc[0]: [doc[1]]}]
+    assert backend.build_tree(doc) == [(doc[0], [doc[1]])]
 
 
 def test_multiple_leaves():
@@ -24,7 +24,7 @@ def test_multiple_leaves():
         "  leaf: 1",
         "  apple: 2",
     ]
-    assert backend.build_tree(doc) == [{doc[0]: [doc[1], doc[2]]}]
+    assert backend.build_tree(doc) == [(doc[0], [doc[1], doc[2]])]
 
 
 def test_multiple_branches():
@@ -36,8 +36,8 @@ def test_multiple_branches():
         "  orange: 4",
     ]
     expected = [
-        {doc[0]: [doc[1], doc[2]]},
-        {doc[3]: [doc[4]]},
+        (doc[0], [doc[1], doc[2]]),
+        (doc[3], [doc[4]]),
     ]
     assert backend.build_tree(doc) == expected
 
@@ -54,21 +54,24 @@ def test_deep_nesting():
     ]
 
     expected = [
-        {
-            doc[0]: [
-                {
-                    doc[1]: [
-                        {
-                            doc[2]: [
+        (
+            doc[0],
+            [
+                (
+                    doc[1],
+                    [
+                        (
+                            doc[2],
+                            [
                                 doc[3],
                                 doc[4],
-                                {doc[5]: [doc[6]]},
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
+                                (doc[5], [doc[6]]),
+                            ],
+                        )
+                    ],
+                )
+            ],
+        )
     ]
 
     assert backend.build_tree(doc) == expected
