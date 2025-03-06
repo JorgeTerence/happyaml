@@ -50,6 +50,7 @@ def child_bounds(lines: list[str], root_index: int) -> int:
     return len(lines)
 
 
+# DONE
 def indentation(line: str) -> int:
     return len(re.search(r"^\s*", line).group())  # type: ignore
 

@@ -1,6 +1,7 @@
 {
     "python.testing.pytestArgs": [
         "--color=yes",
+        "-vv",
         "tests",
     ],
     "python.testing.unittestEnabled": false,
